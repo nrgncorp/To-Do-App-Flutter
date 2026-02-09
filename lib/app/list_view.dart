@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hardware_andro_kurs/app/screens/add_todo_view.dart';
 import 'package:hardware_andro_kurs/app/stores/todo_store.dart';
 import 'package:hardware_andro_kurs/app/models/todo.dart';
 import 'package:provider/provider.dart';
@@ -73,10 +74,7 @@ class _ToDoListViewState extends State<ToDoListView> {
           Navigator.of(context).push(
             MaterialPageRoute(
               builder: (context) {
-                return Scaffold(
-                  appBar: AppBar(title: Text('Yeni Görev')),
-                  body: Center(child: Text('Yapılıyor..')),
-                );
+                return AddTodoView();
               },
               fullscreenDialog: false,
             ),
