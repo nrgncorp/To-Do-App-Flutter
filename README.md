@@ -1,5 +1,3 @@
-# hardware_andro_kurs
-
 A new Flutter project.
 
 ## Getting Started
