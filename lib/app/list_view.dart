@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hardware_andro_kurs/app/screens/add_todo_view.dart';
 import 'package:hardware_andro_kurs/app/stores/todo_store.dart';
-import 'package:hardware_andro_kurs/app/models/todo.dart';
+// import 'package:hardware_andro_kurs/app/models/todo.dart';
 import 'package:provider/provider.dart';
 
 class ToDoListView extends StatefulWidget {
@@ -70,15 +70,14 @@ class _ToDoListViewState extends State<ToDoListView> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) {
-                return AddTodoView();
-              },
-              fullscreenDialog: false,
-            ),
-          );
+        onPressed: () async {
+          final result = await Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (context) => const AddTodoView()));
+
+          if (result == true) {
+            setState(() {}); // sadece build tetiklemek için
+          }
         },
         backgroundColor: Colors.blue,
         shape: CircleBorder(),

@@ -95,9 +95,9 @@ class TodoStore extends ChangeNotifier {
     ),
   ];
   final List<Status> _itemStatus = [
-    Status(id: 1, label: 'Tamamlandı'),
+    Status(id: 1, label: 'Bekliyor'),
     Status(id: 2, label: 'Devam Ediyor'),
-    Status(id: 3, label: 'Bekliyor'),
+    Status(id: 3, label: 'Tamamlandı'),
     Status(id: 4, label: 'İptal'),
   ];
   final List<Importance> _itemImportance = [
@@ -109,4 +109,24 @@ class TodoStore extends ChangeNotifier {
   List<Todo> get todos => List.unmodifiable(_todos);
   List<Status> get itemStatus => List.unmodifiable(_itemStatus);
   List<Importance> get itemImportance => List.unmodifiable(_itemImportance);
+
+  void addJob(
+    String title,
+    String subTitle,
+    int status,
+    int importance,
+    DateTime startDate,
+    DateTime endDate,
+  ) {
+    final newTodo = Todo(
+      id: _todos.length,
+      title: title,
+      subTitle: subTitle,
+      status: status,
+      importance: importance,
+      startDate: startDate,
+      endDate: endDate,
+    );
+    _todos.add(newTodo);
+  }
 }
