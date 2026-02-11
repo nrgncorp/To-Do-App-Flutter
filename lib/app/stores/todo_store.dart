@@ -110,6 +110,30 @@ class TodoStore extends ChangeNotifier {
   List<Status> get itemStatus => List.unmodifiable(_itemStatus);
   List<Importance> get itemImportance => List.unmodifiable(_itemImportance);
 
+  Todo? updateById(
+    int id,
+    String title,
+    String subTitle,
+    int status,
+    int importance,
+    DateTime startDate,
+    DateTime endDate,
+  ) {
+    final index = _todos.indexWhere((item) => item.id == id);
+
+    if (index == -1) return null;
+
+    _todos[index].title = title;
+    _todos[index].subTitle = subTitle;
+    _todos[index].status = status;
+    _todos[index].importance = importance;
+    _todos[index].startDate = startDate;
+    _todos[index].endDate = endDate;
+
+    notifyListeners();
+    return null;
+  }
+
   Todo? getTodoById(int id) {
     try {
       return _todos.firstWhere((todo) => todo.id == id);

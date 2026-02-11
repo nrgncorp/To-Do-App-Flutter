@@ -1,11 +1,11 @@
 class Todo {
-  final int id;
-  final String title;
-  final String subTitle;
-  final int status;
-  final int importance;
-  final DateTime startDate;
-  final DateTime endDate;
+  int id;
+  String title;
+  String subTitle;
+  int status;
+  int importance;
+  DateTime startDate;
+  DateTime endDate;
 
   Todo({
     required this.id,

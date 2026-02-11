@@ -119,7 +119,7 @@ class _AddTodoViewState extends State<AddTodoView> {
                           children: [
                             Expanded(
                               child: DropdownButtonFormField<Status>(
-                                value: selectedStatus,
+                                initialValue: selectedStatus,
                                 decoration: const InputDecoration(
                                   labelText: 'Durum',
                                   filled: true,
@@ -146,7 +146,7 @@ class _AddTodoViewState extends State<AddTodoView> {
                             const SizedBox(width: 8),
                             Expanded(
                               child: DropdownButtonFormField<Importance>(
-                                value: selectedImportance,
+                                initialValue: selectedImportance,
                                 decoration: const InputDecoration(
                                   labelText: 'Önem',
                                   filled: true,
@@ -257,17 +257,31 @@ class _AddTodoViewState extends State<AddTodoView> {
                               ),
                               onPressed: isFormValid
                                   ? () {
-                                      if (_formKey.currentState!.validate()) {
-                                        context.read<TodoStore>().addJob(
-                                          titleController.text.trim(),
-                                          descriptionController.text.trim(),
-                                          selectedStatus!.id,
-                                          selectedImportance!.id,
-                                          selectedStartDate!,
-                                          selectedEndDate!,
-                                        );
+                                      if (widget.isEdit) {
+                                        if (_formKey.currentState!.validate()) {
+                                          todoStore.updateById(
+                                            widget.id,
+                                            titleController.text.trim(),
+                                            descriptionController.text.trim(),
+                                            selectedStatus!.id,
+                                            selectedImportance!.id,
+                                            selectedStartDate!,
+                                            selectedEndDate!,
+                                          );
+                                        }
+                                      } else {
+                                        if (_formKey.currentState!.validate()) {
+                                          context.read<TodoStore>().addJob(
+                                            titleController.text.trim(),
+                                            descriptionController.text.trim(),
+                                            selectedStatus!.id,
+                                            selectedImportance!.id,
+                                            selectedStartDate!,
+                                            selectedEndDate!,
+                                          );
 
-                                        Navigator.pop(context, true);
+                                          Navigator.pop(context, true);
+                                        }
                                       }
                                     }
                                   : null,
