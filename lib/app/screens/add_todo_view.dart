@@ -4,7 +4,21 @@ import 'package:hardware_andro_kurs/app/stores/todo_store.dart';
 import 'package:provider/provider.dart';
 
 class AddTodoView extends StatefulWidget {
-  const AddTodoView({super.key});
+  const AddTodoView({
+    super.key,
+    this.isEdit = false,
+    this.id = 0,
+    this.title = '',
+    this.subTitle = '',
+    this.status = 1,
+    this.importanceId = 1,
+  });
+  final bool isEdit;
+  final int id;
+  final String title;
+  final String subTitle;
+  final int status;
+  final int importanceId;
 
   @override
   State<AddTodoView> createState() => _AddTodoViewState();
@@ -32,15 +46,34 @@ class _AddTodoViewState extends State<AddTodoView> {
     final todoStore = context.watch<TodoStore>();
     final itemStatus = todoStore.itemStatus;
     final itemImportance = todoStore.itemImportance;
-    if (itemStatus.isNotEmpty && selectedStatus == null) {
-      selectedStatus = itemStatus.first;
-    }
-
-    if (itemImportance.isNotEmpty && selectedImportance == null) {
-      selectedImportance = itemImportance.first;
+    if (widget.isEdit) {
+      if (itemStatus.isNotEmpty) {
+        selectedStatus = itemStatus.firstWhere(
+          (s) => s.id == widget.status,
+          orElse: () => itemStatus.first,
+        );
+      }
+      if (itemImportance.isNotEmpty) {
+        selectedImportance = itemImportance.firstWhere(
+          (i) => i.id == widget.importanceId,
+          orElse: () => itemImportance.first,
+        );
+      }
+    } else {
+      if (itemStatus.isNotEmpty && selectedStatus == null) {
+        selectedStatus = itemStatus.first;
+      }
+      if (itemImportance.isNotEmpty && selectedImportance == null) {
+        selectedImportance = itemImportance.first;
+      }
     }
 
     var inputBgColor = const Color.fromARGB(40, 255, 255, 255);
+    const buttonTextStyle = TextStyle(
+      color: Colors.white,
+      fontWeight: FontWeight.w500,
+      fontSize: 20,
+    );
     return Scaffold(
       appBar: AppBar(title: Text('Yeni Görev')),
       body: Padding(
@@ -245,14 +278,15 @@ class _AddTodoViewState extends State<AddTodoView> {
                                   : null,
                               child: Padding(
                                 padding: const EdgeInsets.all(10.0),
-                                child: Text(
-                                  'Oluştur',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: 20,
-                                  ),
-                                ),
+                                child: widget.isEdit
+                                    ? const Text(
+                                        'Düzenle',
+                                        style: buttonTextStyle,
+                                      )
+                                    : const Text(
+                                        'Oluştur',
+                                        style: buttonTextStyle,
+                                      ),
                               ),
                             ),
                           ),

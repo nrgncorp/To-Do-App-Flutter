@@ -62,6 +62,8 @@ class _ToDoListViewState extends State<ToDoListView> {
                     importanceId: items[index].importance,
                     importance:
                         itemImportance[items[index].importance - 1].label,
+                    endDate: items[index].endDate,
+                    startDate: items[index].startDate,
                   ),
                 );
               },
@@ -96,6 +98,8 @@ class ListItem extends StatelessWidget {
     required this.status,
     required this.importanceId,
     required this.importance,
+    required this.startDate,
+    required this.endDate,
   });
 
   final int id;
@@ -104,6 +108,8 @@ class ListItem extends StatelessWidget {
   final int status;
   final int importanceId;
   final String importance;
+  final DateTime startDate;
+  final DateTime endDate;
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +119,24 @@ class ListItem extends StatelessWidget {
       title: Text(title),
       subtitle: Text(subTitle),
       trailing: Text(importance),
-      onTap: () {},
+      onTap: () async {
+        await Navigator.of(context).push(
+          MaterialPageRoute(
+            builder: (context) => AddTodoView(
+              isEdit: true,
+              id: id,
+              title: title,
+              subTitle: subTitle,
+              status: status,
+              importanceId: importanceId,
+            ),
+          ),
+        );
+
+        // if (result == true) {
+        //   setState(() {});
+        // }
+      },
     );
   }
 }
