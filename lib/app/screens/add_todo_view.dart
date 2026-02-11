@@ -4,21 +4,9 @@ import 'package:hardware_andro_kurs/app/stores/todo_store.dart';
 import 'package:provider/provider.dart';
 
 class AddTodoView extends StatefulWidget {
-  const AddTodoView({
-    super.key,
-    this.isEdit = false,
-    this.id = 0,
-    this.title = '',
-    this.subTitle = '',
-    this.status = 1,
-    this.importanceId = 1,
-  });
+  const AddTodoView({super.key, this.isEdit = false, this.id = 0});
   final bool isEdit;
   final int id;
-  final String title;
-  final String subTitle;
-  final int status;
-  final int importanceId;
 
   @override
   State<AddTodoView> createState() => _AddTodoViewState();
@@ -29,8 +17,8 @@ class _AddTodoViewState extends State<AddTodoView> {
   Importance? selectedImportance;
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
-  final TextEditingController titleController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
   bool get isFormValid {
     return titleController.text.trim().isNotEmpty &&
@@ -47,17 +35,20 @@ class _AddTodoViewState extends State<AddTodoView> {
     final itemStatus = todoStore.itemStatus;
     final itemImportance = todoStore.itemImportance;
     if (widget.isEdit) {
-      if (itemStatus.isNotEmpty) {
-        selectedStatus = itemStatus.firstWhere(
-          (s) => s.id == widget.status,
-          orElse: () => itemStatus.first,
-        );
-      }
-      if (itemImportance.isNotEmpty) {
+      final todoItem = todoStore.getTodoById(widget.id);
+
+      if (todoItem != null) {
+        titleController.text = todoItem.title;
+        descriptionController.text = todoItem.subTitle;
+
+        selectedStatus = itemStatus.firstWhere((s) => s.id == todoItem.status);
+
         selectedImportance = itemImportance.firstWhere(
-          (i) => i.id == widget.importanceId,
-          orElse: () => itemImportance.first,
+          (i) => i.id == todoItem.importance,
         );
+
+        selectedStartDate = todoItem.startDate;
+        selectedEndDate = todoItem.endDate;
       }
     } else {
       if (itemStatus.isNotEmpty && selectedStatus == null) {
@@ -75,7 +66,11 @@ class _AddTodoViewState extends State<AddTodoView> {
       fontSize: 20,
     );
     return Scaffold(
-      appBar: AppBar(title: Text('Yeni Görev')),
+      appBar: AppBar(
+        title: widget.isEdit
+            ? const Text('Görev Detay', style: buttonTextStyle)
+            : const Text('Yeni Görev', style: buttonTextStyle),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Row(

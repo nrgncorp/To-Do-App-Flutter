@@ -110,6 +110,14 @@ class TodoStore extends ChangeNotifier {
   List<Status> get itemStatus => List.unmodifiable(_itemStatus);
   List<Importance> get itemImportance => List.unmodifiable(_itemImportance);
 
+  Todo? getTodoById(int id) {
+    try {
+      return _todos.firstWhere((todo) => todo.id == id);
+    } catch (e) {
+      return null;
+    }
+  }
+
   void addJob(
     String title,
     String subTitle,
