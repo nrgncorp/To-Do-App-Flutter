@@ -13,8 +13,11 @@ class AddTodoView extends StatefulWidget {
 }
 
 class _AddTodoViewState extends State<AddTodoView> {
+  bool? isLoaded = false;
   Status? selectedStatus;
+  int? selectedStatusValue;
   Importance? selectedImportance;
+  int? selectedImportanceValue;
   DateTime? selectedStartDate;
   DateTime? selectedEndDate;
   TextEditingController titleController = TextEditingController();
@@ -36,19 +39,29 @@ class _AddTodoViewState extends State<AddTodoView> {
     final itemImportance = todoStore.itemImportance;
     if (widget.isEdit) {
       final todoItem = todoStore.getTodoById(widget.id);
-
-      if (todoItem != null) {
+      if (todoItem != null && isLoaded == false) {
         titleController.text = todoItem.title;
         descriptionController.text = todoItem.subTitle;
 
         selectedStatus = itemStatus.firstWhere((s) => s.id == todoItem.status);
+        if (selectedStatus != null) {
+          setState(() {
+            selectedStatusValue = selectedStatus!.id;
+          });
+        }
 
         selectedImportance = itemImportance.firstWhere(
           (i) => i.id == todoItem.importance,
         );
+        if (selectedImportance != null) {
+          setState(() {
+            selectedImportanceValue = selectedImportance!.id;
+          });
+        }
 
         selectedStartDate = todoItem.startDate;
         selectedEndDate = todoItem.endDate;
+        isLoaded = true;
       }
     } else {
       if (itemStatus.isNotEmpty && selectedStatus == null) {
@@ -138,7 +151,7 @@ class _AddTodoViewState extends State<AddTodoView> {
                                 }).toList(),
                                 onChanged: (value) {
                                   setState(() {
-                                    selectedStatus = value;
+                                    selectedStatusValue = value!.id;
                                   });
                                 },
                               ),
@@ -165,7 +178,7 @@ class _AddTodoViewState extends State<AddTodoView> {
                                 }).toList(),
                                 onChanged: (value) {
                                   setState(() {
-                                    selectedImportance = value;
+                                    selectedImportanceValue = value!.id;
                                   });
                                 },
                               ),
@@ -232,6 +245,14 @@ class _AddTodoViewState extends State<AddTodoView> {
                                     });
                                   }
                                 },
+                                onChanged: (value) => {
+                                  if (!value.isEmpty)
+                                    {
+                                      setState(() {
+                                        // selectedEndDate = value.toString();
+                                      }),
+                                    },
+                                },
                               ),
                             ),
                           ],
@@ -259,12 +280,17 @@ class _AddTodoViewState extends State<AddTodoView> {
                                   ? () {
                                       if (widget.isEdit) {
                                         if (_formKey.currentState!.validate()) {
+                                          // print(
+                                          //   selectedImportance!.label
+                                          //       .toString(),
+                                          // );
+
                                           todoStore.updateById(
                                             widget.id,
                                             titleController.text.trim(),
                                             descriptionController.text.trim(),
-                                            selectedStatus!.id,
-                                            selectedImportance!.id,
+                                            selectedStatusValue!,
+                                            selectedImportanceValue!,
                                             selectedStartDate!,
                                             selectedEndDate!,
                                           );
@@ -274,8 +300,8 @@ class _AddTodoViewState extends State<AddTodoView> {
                                           context.read<TodoStore>().addJob(
                                             titleController.text.trim(),
                                             descriptionController.text.trim(),
-                                            selectedStatus!.id,
-                                            selectedImportance!.id,
+                                            selectedStatusValue!,
+                                            selectedImportanceValue!,
                                             selectedStartDate!,
                                             selectedEndDate!,
                                           );

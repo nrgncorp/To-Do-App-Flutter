@@ -151,7 +151,7 @@ class TodoStore extends ChangeNotifier {
     DateTime endDate,
   ) {
     final newTodo = Todo(
-      id: _todos.length,
+      id: _todos.length + 1,
       title: title,
       subTitle: subTitle,
       status: status,
