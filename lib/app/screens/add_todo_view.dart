@@ -96,91 +96,34 @@ class _AddTodoViewState extends State<AddTodoView> {
                   children: [
                     Column(
                       children: [
-                        TextFormField(
-                          controller: titleController,
-                          decoration: InputDecoration(
-                            labelText: 'Başlık',
-                            fillColor: inputBgColor,
-                            filled: true,
-                          ),
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Başlık boş bırakılamaz';
-                            }
-                            return null;
-                          },
+                        TextFormFieldWidget(
+                          valueController: titleController,
+                          name: 'Başlık',
                         ),
                         Spacer(),
-                        TextFormField(
-                          controller: descriptionController,
-                          decoration: InputDecoration(
-                            labelText: 'Açıklama',
-                            fillColor: const Color.fromARGB(40, 255, 255, 255),
-                            filled: true,
-                          ),
-                          minLines: 5,
-                          maxLines: 5,
-                          validator: (value) {
-                            if (value == null || value.trim().isEmpty) {
-                              return 'Açıklama boş bırakılamaz';
-                            }
-                            return null;
-                          },
+                        TextFormFieldWidget(
+                          valueController: descriptionController,
+                          lineCount: 5,
+                          name: 'Açıklama',
                         ),
                         Spacer(),
                         Row(
                           children: [
                             Expanded(
-                              child: DropdownButtonFormField<Status>(
+                              child: DropdownButtonFormFieldMethod<Status>(
+                                items: itemStatus,
+                                name: 'Durum',
                                 initialValue: selectedStatus,
-                                decoration: const InputDecoration(
-                                  labelText: 'Durum',
-                                  filled: true,
-                                ),
-                                validator: (value) {
-                                  if (value == null) {
-                                    return 'Durum seçmelisin';
-                                  }
-                                  return null;
-                                },
-                                items: itemStatus.map((status) {
-                                  return DropdownMenuItem<Status>(
-                                    value: status,
-                                    child: Text(status.label),
-                                  );
-                                }).toList(),
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedStatusValue = value!.id;
-                                  });
-                                },
+                                labelBuilder: (e) => e.label,
                               ),
                             ),
                             const SizedBox(width: 8),
                             Expanded(
-                              child: DropdownButtonFormField<Importance>(
+                              child: DropdownButtonFormFieldMethod<Importance>(
+                                items: itemImportance,
+                                name: 'Önem',
                                 initialValue: selectedImportance,
-                                decoration: const InputDecoration(
-                                  labelText: 'Önem',
-                                  filled: true,
-                                ),
-                                validator: (value) {
-                                  if (value == null) {
-                                    return 'Durum seçmelisin';
-                                  }
-                                  return null;
-                                },
-                                items: itemImportance.map((imp) {
-                                  return DropdownMenuItem<Importance>(
-                                    value: imp,
-                                    child: Text(imp.label),
-                                  );
-                                }).toList(),
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedImportanceValue = value!.id;
-                                  });
-                                },
+                                labelBuilder: (e) => e.label,
                               ),
                             ),
                           ],
@@ -189,69 +132,23 @@ class _AddTodoViewState extends State<AddTodoView> {
                         Row(
                           children: [
                             Expanded(
-                              child: TextFormField(
-                                readOnly: true,
-                                decoration: const InputDecoration(
-                                  labelText: 'Tarih',
-                                  filled: true,
-                                ),
-                                controller: TextEditingController(
-                                  text: selectedStartDate == null
-                                      ? ''
-                                      : '${selectedStartDate!.day}.${selectedStartDate!.month}.${selectedStartDate!.year}',
-                                ),
-                                onTap: () async {
-                                  final DateTime? picked = await showDatePicker(
-                                    context: context,
-                                    initialDate:
-                                        selectedStartDate ?? DateTime.now(),
-                                    firstDate: DateTime(2000),
-                                    lastDate: DateTime(2100),
-                                  );
-
-                                  if (picked != null) {
-                                    setState(() {
-                                      selectedStartDate = picked;
-                                    });
-                                  }
+                              child: datePickerMethod(
+                                dateValue: selectedStartDate,
+                                onDatePicked: (picked) {
+                                  setState(() {
+                                    selectedStartDate = picked;
+                                  });
                                 },
                               ),
                             ),
                             const SizedBox(width: 8),
                             Expanded(
-                              child: TextFormField(
-                                readOnly: true,
-                                decoration: const InputDecoration(
-                                  labelText: 'Tarih',
-                                  filled: true,
-                                ),
-                                controller: TextEditingController(
-                                  text: selectedEndDate == null
-                                      ? ''
-                                      : '${selectedEndDate!.day}.${selectedEndDate!.month}.${selectedEndDate!.year}',
-                                ),
-                                onTap: () async {
-                                  final DateTime? picked = await showDatePicker(
-                                    context: context,
-                                    initialDate:
-                                        selectedEndDate ?? DateTime.now(),
-                                    firstDate: DateTime(2000),
-                                    lastDate: DateTime(2100),
-                                  );
-
-                                  if (picked != null) {
-                                    setState(() {
-                                      selectedEndDate = picked;
-                                    });
-                                  }
-                                },
-                                onChanged: (value) => {
-                                  if (!value.isEmpty)
-                                    {
-                                      setState(() {
-                                        // selectedEndDate = value.toString();
-                                      }),
-                                    },
+                              child: datePickerMethod(
+                                dateValue: selectedEndDate,
+                                onDatePicked: (picked) {
+                                  setState(() {
+                                    selectedEndDate = picked;
+                                  });
                                 },
                               ),
                             ),
@@ -269,60 +166,18 @@ class _AddTodoViewState extends State<AddTodoView> {
                       child: Row(
                         children: [
                           Expanded(
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24.0),
-                                ),
-                              ),
-                              onPressed: isFormValid
-                                  ? () {
-                                      if (widget.isEdit) {
-                                        if (_formKey.currentState!.validate()) {
-                                          // print(
-                                          //   selectedImportance!.label
-                                          //       .toString(),
-                                          // );
-
-                                          todoStore.updateById(
-                                            widget.id,
-                                            titleController.text.trim(),
-                                            descriptionController.text.trim(),
-                                            selectedStatusValue!,
-                                            selectedImportanceValue!,
-                                            selectedStartDate!,
-                                            selectedEndDate!,
-                                          );
-                                        }
-                                      } else {
-                                        if (_formKey.currentState!.validate()) {
-                                          context.read<TodoStore>().addJob(
-                                            titleController.text.trim(),
-                                            descriptionController.text.trim(),
-                                            selectedStatusValue!,
-                                            selectedImportanceValue!,
-                                            selectedStartDate!,
-                                            selectedEndDate!,
-                                          );
-
-                                          Navigator.pop(context, true);
-                                        }
-                                      }
-                                    }
-                                  : null,
-                              child: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: widget.isEdit
-                                    ? const Text(
-                                        'Düzenle',
-                                        style: buttonTextStyle,
-                                      )
-                                    : const Text(
-                                        'Oluştur',
-                                        style: buttonTextStyle,
-                                      ),
-                              ),
+                            child: todoDetailButton(
+                              isFormValid: isFormValid,
+                              widget: widget,
+                              formKey: _formKey,
+                              todoStore: todoStore,
+                              titleController: titleController,
+                              descriptionController: descriptionController,
+                              selectedStatusValue: selectedStatusValue,
+                              selectedImportanceValue: selectedImportanceValue,
+                              selectedStartDate: selectedStartDate,
+                              selectedEndDate: selectedEndDate,
+                              buttonTextStyle: buttonTextStyle,
                             ),
                           ),
                         ],
@@ -335,6 +190,183 @@ class _AddTodoViewState extends State<AddTodoView> {
           ],
         ),
       ),
+    );
+  }
+
+  TextFormField datePickerMethod({
+    DateTime? dateValue,
+    required Function(DateTime) onDatePicked,
+  }) {
+    return TextFormField(
+      readOnly: true,
+      decoration: const InputDecoration(labelText: 'Tarih', filled: true),
+      controller: TextEditingController(
+        text: dateValue == null
+            ? ''
+            : '${dateValue.day}.${dateValue.month}.${dateValue.year}',
+      ),
+      onTap: () async {
+        final DateTime? picked = await showDatePicker(
+          context: context,
+          initialDate: dateValue ?? DateTime.now(),
+          firstDate: DateTime(2000),
+          lastDate: DateTime(2100),
+        );
+
+        if (picked != null) {
+          onDatePicked(picked);
+        }
+      },
+    );
+  }
+
+  DropdownButtonFormField<T> DropdownButtonFormFieldMethod<T>({
+    required List<T> items,
+    required String Function(T) labelBuilder,
+    required String name,
+    required T? initialValue,
+  }) {
+    return DropdownButtonFormField<T>(
+      initialValue: initialValue,
+      decoration: InputDecoration(labelText: name, filled: true),
+      validator: (initialValue) {
+        if (initialValue == null) {
+          return '$name seçmelisin';
+        }
+        return null;
+      },
+      items: items.map((value) {
+        return DropdownMenuItem<T>(
+          value: value,
+          child: Text(labelBuilder(value)),
+        );
+      }).toList(),
+      onChanged: (value) {
+        setState(() {
+          if (items is List<Status>) {
+            selectedStatus = value as Status;
+            selectedStatusValue = selectedStatus!.id;
+          } else if (items is List<Importance>) {
+            selectedImportance = value as Importance;
+            selectedImportanceValue = selectedImportance!.id;
+          }
+        });
+      },
+    );
+  }
+}
+
+class todoDetailButton extends StatelessWidget {
+  const todoDetailButton({
+    super.key,
+    required this.isFormValid,
+    required this.widget,
+    required GlobalKey<FormState> formKey,
+    required this.todoStore,
+    required this.titleController,
+    required this.descriptionController,
+    required this.selectedStatusValue,
+    required this.selectedImportanceValue,
+    required this.selectedStartDate,
+    required this.selectedEndDate,
+    required this.buttonTextStyle,
+  }) : _formKey = formKey;
+
+  final bool isFormValid;
+  final AddTodoView widget;
+  final GlobalKey<FormState> _formKey;
+  final TodoStore todoStore;
+  final TextEditingController titleController;
+  final TextEditingController descriptionController;
+  final int? selectedStatusValue;
+  final int? selectedImportanceValue;
+  final DateTime? selectedStartDate;
+  final DateTime? selectedEndDate;
+  final TextStyle buttonTextStyle;
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.green,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(24.0),
+        ),
+      ),
+      onPressed: isFormValid
+          ? () {
+              if (widget.isEdit) {
+                if (_formKey.currentState!.validate()) {
+                  // print(
+                  //   selectedImportance!.label
+                  //       .toString(),
+                  // );
+
+                  todoStore.updateById(
+                    widget.id,
+                    titleController.text.trim(),
+                    descriptionController.text.trim(),
+                    selectedStatusValue!,
+                    selectedImportanceValue!,
+                    selectedStartDate!,
+                    selectedEndDate!,
+                  );
+                }
+              } else {
+                if (_formKey.currentState!.validate()) {
+                  context.read<TodoStore>().addJob(
+                    titleController.text.trim(),
+                    descriptionController.text.trim(),
+                    selectedStatusValue!,
+                    selectedImportanceValue!,
+                    selectedStartDate!,
+                    selectedEndDate!,
+                  );
+
+                  Navigator.pop(context, true);
+                }
+              }
+            }
+          : null,
+      child: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: widget.isEdit
+            ? Text('Düzenle', style: buttonTextStyle)
+            : Text('Oluştur', style: buttonTextStyle),
+      ),
+    );
+  }
+}
+
+class TextFormFieldWidget extends StatelessWidget {
+  const TextFormFieldWidget({
+    super.key,
+    required this.valueController,
+    this.lineCount = 1,
+    required this.name,
+  });
+
+  final TextEditingController valueController;
+  final int lineCount;
+  final String name;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: valueController,
+      decoration: InputDecoration(
+        labelText: name,
+        fillColor: const Color.fromARGB(40, 255, 255, 255),
+        filled: true,
+      ),
+      minLines: lineCount,
+      maxLines: lineCount,
+      validator: (value) {
+        if (value == null || value.trim().isEmpty) {
+          return '$name boş bırakılamaz';
+        }
+        return null;
+      },
     );
   }
 }
